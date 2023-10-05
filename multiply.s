@@ -3,7 +3,7 @@
 input_x_prompt	:	.asciz	"Please enter x: "
 input_y_prompt	:	.asciz	"Please enter y: "
 input_spec	:	.asciz	"%d"
-result		:	.asciz	"x * y = %d\n"
+result		:	.asciz	"x*y = %d\n"
 
 .section .text
 
@@ -38,12 +38,22 @@ ldrsw x20, [sp]
 # set x21 to 0
 mov x21, 0
 
+# check if y is negative
+cmp x20, 0
+b.lt negate
+
 # multiply x and y
 recmul:
 	cmp x20, 0
 	b.eq exit
 	add x21, x21, x19
 	sub x20, x20, 1
+	b recmul
+
+# negate x and y
+negate:
+	sub x19, xzr, x19
+	sub x20, xzr, x20
 	b recmul
 
 # branch to this label on program completion
@@ -55,4 +65,3 @@ exit:
 	mov x8, 93
 	svc 0
 	ret
-
